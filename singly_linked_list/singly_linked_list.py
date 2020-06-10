@@ -18,14 +18,22 @@ class SinglyLinkedList:
   def __init__(self):
     self.head = None
     self.tail = None
+    self.length = 0
 
   def __len__(self):
-    length = 0
-    node = self.head
-    while node != None:
-      length = length + 1
-      node = node.get_next()
-    return length
+    return self.length
+    # length = 0
+    # node = self.head
+    # while node != None:
+    #   length = length + 1
+    #   node = node.get_next()
+    # return length
+
+  def get_head(self):
+    return self.head
+    
+  def get_tail(self):
+    return self.tail
 
   def append(self, value):
     node = SinglyLinkedNode(value)
@@ -35,12 +43,14 @@ class SinglyLinkedList:
     else:
       self.tail.set_next(node)
       self.tail = node
+    self.length += 1
 
   def remove_last(self):
     last_node = self.tail
-    if self.head == None:
+    if last_node == None:
       return None
-    elif self.head == self.tail:
+
+    if self.head == last_node:
       self.head = None
       self.tail = None
     else:
@@ -48,17 +58,21 @@ class SinglyLinkedList:
       while not prev_to_last.get_next() == last_node:
         prev_to_last = prev_to_last.get_next()
       self.tail = prev_to_last
+      self.tail.set_next(None)
+    self.length -= 1
     return last_node.get_value()
 
   def remove_first(self):
     first_node = self.head
-    if self.head == None:
+    if first_node == None:
       return None
-    elif self.head == self.tail:
+
+    if self.tail == first_node:
       self.head = None
       self.tail = None
     else:
       self.head = self.head.get_next()
+    self.length -= 1
     return first_node.get_value()
 
   def contains(self, data):
@@ -93,5 +107,4 @@ class LinkedList(SinglyLinkedList):
 
   def remove_head(self):
     return super().remove_first()
-
 
