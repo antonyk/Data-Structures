@@ -1,7 +1,3 @@
-# import sys
-# sys.path.append('../queue')
-# from queue import Queue
-
 """
 Binary search trees are a data structure that enforce an ordering over 
 the data they store. That ordering in turn makes it a lot more efficient 
@@ -53,8 +49,12 @@ class BSTNode:
         else:
             return self.value
 
+    def get(self, value):
+        pass
+
     # Call the function `fn` on the value of each node
-    def for_each(self, fn, method='depth'):
+    def for_each(self, fn, method='order', left=True):
+        # iterate over the elements of a sorted binary tree
         if method == 'order':
             if self.left:
                 self.left.for_each(fn, method)
@@ -62,22 +62,40 @@ class BSTNode:
             if self.right:
                 self.right.for_each(fn, method)
 
-        if method == 'depth':
+        elif method == 'pre-order':
             fn(self.value)
             if self.left:
                 self.left.for_each(fn, method)
             if self.right:
                 self.right.for_each(fn, method)
 
-        if method == 'breath':
-            pending = []
-            pending.append(self)
-            while len(pending) > 0:
-                node = pending.pop(0)
+        elif method == 'post-order':
+            if self.left:
+                self.left.for_each(fn, method)
+            if self.right:
+                self.right.for_each(fn, method)
+            fn(self.value)
+
+        elif method == 'iter-dft':
+            pending_stack = []
+            pending_stack.append(self)
+            while len(pending_stack) > 0:
+                node = pending_stack.pop()
                 if node.left:
-                    pending.append(node.left)
+                    pending_stack.append(node.left)
                 if node.right:
-                    pending.append(node.right)
+                    pending_stack.append(node.right)
+                fn(node.value)
+
+        elif method == 'iter-bft':
+            pending_queue = []
+            pending_queue.append(self)
+            while len(pending_queue) > 0:
+                node = pending_queue.pop(0)
+                if node.left:
+                    pending_queue.append(node.left)
+                if node.right:
+                    pending_queue.append(node.right)
                 fn(node.value)
 
     # Part 2 -----------------------
@@ -94,26 +112,29 @@ class BSTNode:
     def bft_print(self, node=None):
         if node == None:
             node = self
-        node.for_each(print, 'breath')
+        node.for_each(print, 'iter-bft')
 
     # Print the value of every node, starting with the given node,
     # in an iterative depth first traversal
     def dft_print(self, node=None):
         if node == None:
             node = self
-        node.for_each(print, "depth")
+        node.for_each(print, "iter-dft")
 
     # Stretch Goals -------------------------
     # Note: Research may be required
 
     # Print Pre-order recursive DFT
     def pre_order_dft(self, node):
-        pass
+        # if node == None:
+        #     node = self
+        node.for_each(print, "pre-order")
 
     # Print Post-order recursive DFT
     def post_order_dft(self, node):
-        pass
-
+        if node == None:
+            node = self
+        node.for_each(print, "post-order")
 
 
 def test():
@@ -135,4 +156,13 @@ def test():
 
 
 test()
+
+def demo():
+    import random
+
+    tree = BSTNode(0)
+    for i in range(20):
+        tree.insert(random.randint(0, 50))
+
+    val = int(input("Enter an integer from 0-49"))
 
