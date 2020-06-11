@@ -1,3 +1,7 @@
+# import sys
+# sys.path.append('../queue')
+# from queue import Queue
+
 """
 Binary search trees are a data structure that enforce an ordering over 
 the data they store. That ordering in turn makes it a lot more efficient 
@@ -51,19 +55,30 @@ class BSTNode:
 
     # Call the function `fn` on the value of each node
     def for_each(self, fn, method='depth'):
-        if method == 'depth':
+        if method == 'order':
             if self.left:
                 self.left.for_each(fn, method)
             fn(self.value)
             if self.right:
                 self.right.for_each(fn, method)
 
-        if method == 'breath':
+        if method == 'depth':
             fn(self.value)
             if self.left:
                 self.left.for_each(fn, method)
             if self.right:
                 self.right.for_each(fn, method)
+
+        if method == 'breath':
+            pending = []
+            pending.append(self)
+            while len(pending) > 0:
+                node = pending.pop(0)
+                if node.left:
+                    pending.append(node.left)
+                if node.right:
+                    pending.append(node.right)
+                fn(node.value)
 
     # Part 2 -----------------------
 
@@ -72,7 +87,7 @@ class BSTNode:
     def in_order_print(self, node=None):
         if node == None:
             node = self
-        node.for_each(print, 'depth')
+        node.for_each(print, 'order')
 
     # Print the value of every node, starting with the given node,
     # in an iterative breadth first traversal
