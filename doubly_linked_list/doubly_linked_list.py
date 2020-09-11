@@ -26,8 +26,8 @@ class ListNode:
         after this node. Note that this node could already
         have a next node it is point to."""
 
-      node = ListNode(value, self, self.next)
-       if self.next != None:
+        node = ListNode(value, self, self.next)
+        if self.next != None:
             self.next.prev = node
         self.next = node
 
