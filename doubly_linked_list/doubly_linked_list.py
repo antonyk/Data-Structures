@@ -1,63 +1,46 @@
+# double_linked_list.py
 
 class ListNode:
-    """
-    Each ListNode holds a reference to its previous node
-    as well as its next node in the List.
-    :type prev: ListNode
-    """
+    """Each ListNode holds a reference to its previous node
+    as well as its next node in the List."""
 
     def __init__(self, value, prev=None, next=None):
         self.value = value
         self.prev = prev
         self.next = next
 
-    # def get_prev(self):
-    #     return self.prev
-    # def set_prev(self, node):
-    #     self.prev = node
-
-    # def get_next(self):
-    #     return self.next
-    # def set_next(self, node):
-    #     self.next = node
-
     def insert_after(self, value):
         """Wrap the given value in a ListNode and insert it
         after this node. Note that this node could already
         have a next node it is point to."""
 
-        node = ListNode(value, self, self.next)
+        new_node = ListNode(value, self, self.next)
+        if self.next != None:
+            self.next.prev = new_node
+        self.next = new_node
+
+    def append_node(self, node):
+        node.prev = self
+        node.next = self.next
         if self.next != None:
             self.next.prev = node
         self.next = node
-
-    def append_node(self, node):
-        node.next = self.next
-        if node.next:
-            node.next.prev = node
-        node.prev = self
-        self.next = node
-
-        # current_next = self.next
-        # self.next = ListNode(value, self, current_next)
-        # if current_next:
-        #     current_next.prev = self.next
 
     def insert_before(self, value):
         """Wrap the given value in a ListNode and insert it
         before this node. Note that this node could already
         have a previous node it is point to."""
 
-        current_prev = self.prev
-        self.prev = ListNode(value, current_prev, self)
-        if current_prev:
-            current_prev.next = self.prev
+        new_node = ListNode(value, self.prev, self)
+        if self.prev != None:
+            self.prev.next = new_node
+        self.prev = new_node
 
     def prepend_node(self, node):
-        node.prev = self.prev
-        if node.prev:
-            node.prev.next = node
         node.next = self
+        node.prev = self.prev
+        if self.prev != None:
+            self.prev.next = node
         self.prev = node
 
     def delete(self):
@@ -66,8 +49,10 @@ class ListNode:
 
         if self.prev:
             self.prev.next = self.next
+            # self.prev = None
         if self.next:
             self.next.prev = self.prev
+            # self.next = None
 
 
 class DoublyLinkedList:
@@ -88,6 +73,17 @@ class DoublyLinkedList:
         self.tail = node
         self.length = 1
 
+    def contains(self, node):
+        if self.length == 0:
+            return False
+
+        current = self.head
+        while current:
+            if current is node:
+                return True
+            current = current.next
+        return False
+
     def add_to_head(self, value):
         """Wraps the given value in a ListNode and inserts it 
         as the new head of the list. Don't forget to handle 
@@ -98,12 +94,6 @@ class DoublyLinkedList:
         else:
             self.head.insert_before(value)
             self.head = self.head.prev
-        # node = ListNode(value, None, self.head)
-        # if self.length == 0:
-        #     self.tail = node
-        # if self.head:
-        #     self.head.set_prev(node)
-        # self.head = node
             self.length += 1
 
     def remove_from_head(self):
@@ -133,12 +123,6 @@ class DoublyLinkedList:
         else:
             self.tail.insert_after(value)
             self.tail = self.tail.next
-        # node = ListNode(value, self.tail, None)
-        # if self.length == 0:
-        #     self.head = node
-        # if self.tail:
-        #     self.tail.set_next(node)
-        # self.tail = node
             self.length += 1
 
     def remove_from_tail(self):
@@ -155,35 +139,17 @@ class DoublyLinkedList:
         else:
             self.tail = self.tail.prev
             removed_node.delete()
+
         self.length -= 1
         return removed_node.value
-
-        # if self.length == 0:
-        #     return None
-        # if self.length == 1:
-        #     self.head = None
-        # removed_node = self.tail
-        # self.tail = self.tail.get_prev()
-        # self.length -= 1
-        # return removed_node.value
 
     def move_to_front(self, node):
         """Removes the input node from its current spot in the 
         List and inserts it as the new head node of the List."""
 
         # check if list or node argument are valid for operation
-        if self.length == 0:
-            raise Exception("Cannot perform on empty list")
-        contains = False
-        current = self.head
-        while current:
-            if current == node:
-                contains = True
-                break
-            else:
-                current = current.next
-        if not contains:
-            raise Exception('Node argument not member of list')
+        if not self.contains(node):
+            raise Exception("Node argument not member of list")
 
         # only valid case for this to do something is
         # if length > 1 and passed node is NOT the HEAD
@@ -199,18 +165,8 @@ class DoublyLinkedList:
         List and inserts it as the new tail node of the List."""
 
         # check if list or node argument are valid for operation
-        if self.length == 0:
-            raise Exception("Cannot perform on empty list")
-        contains = False
-        current = self.head
-        while current:
-            if current == node:
-                contains = True
-                break
-            else:
-                current = current.next
-        if not contains:
-            raise Exception('Node argument not member of list')
+        if not self.contains(node):
+            raise Exception("Node argument not member of list")
 
         # only valid case for this to do something is
         # if length > 1 and passed node is not the tail
@@ -221,30 +177,34 @@ class DoublyLinkedList:
             self.tail.append_node(node)
             self.tail = node
 
+    def append(self, node):
+        if self.length > 1:
+            self.tail.append_node(node)
+        self.tail = node
+        self.length += 1
+
+    def prepend(self, node):
+        if self.length > 1:
+            self.head.prepend_node(node)
+        self.head = node
+        self.length += 1
+
     def delete(self, node):
         """Removes a node from the list and handles cases where
         the node was the head or the tail"""
 
-        if self.length == 0:
-            raise Exception("Cannot perform on empty list")
-        contains = False
-        current = self.head
-        while current:
-            if current == node:
-                contains = True
-                break
-            else:
-                current = current.next
-        if not contains:
-            raise Exception('Node argument not member of list')
+        if node:
+            # check if list or node argument are valid for operation
+            if not self.contains(node):
+                raise Exception("Node argument not member of list")
 
-        # check if list or node argument are valid for operation
-        if node == self.head:
-            self.head = self.head.next
-        if node == self.tail:
-            self.tail = self.tail.prev
-        node.delete()
-        self.length -= 1
+            # check if list or node argument are valid for operation
+            if node is self.head:
+                self.head = self.head.next
+            if node is self.tail:
+                self.tail = self.tail.prev
+            node.delete()
+            self.length -= 1
 
     def get_max(self):
         """Returns the highest value currently in the list"""
