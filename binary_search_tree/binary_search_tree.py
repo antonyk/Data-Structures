@@ -9,6 +9,8 @@ This part of the project comprises two days:
 2. Implement the `in_order_print`, `bft_print`, and `dft_print` methods
    on the BSTNode class.
 """
+
+
 class BSTNode:
     def __init__(self, value):
         self.value = value
@@ -28,9 +30,9 @@ class BSTNode:
             else:
                 self.right = BSTNode(value)
 
-
     # Return True if the tree contains the value
     # False if it does not
+
     def contains(self, target):
         if target == self.value:
             return True
@@ -55,7 +57,7 @@ class BSTNode:
     # Call the function `fn` on the value of each node
     def for_each(self, fn, method='order', left=True):
         # iterate over the elements of a sorted binary tree
-        if method == 'order':
+        if method == 'order':  # in-order
             if self.left:
                 self.left.for_each(fn, method)
             fn(self.value)
@@ -157,6 +159,7 @@ def test():
 
 test()
 
+
 def demo():
     import random
 
@@ -165,4 +168,6 @@ def demo():
         tree.insert(random.randint(0, 50))
 
     val = int(input("Enter an integer from 0-49"))
-
+    for i in range(50):
+        if tree.contains(i):
+            pass
